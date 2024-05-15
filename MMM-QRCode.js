@@ -17,7 +17,12 @@ Module.register("MMM-QRCode", {
 		colorLight : "#000",
 		imageSize  : 150,
 		showRaw    : true,
-		connectionString: false,
+		useQRconnection: false,
+		apiKey: 'null',
+	},
+
+	deviceIP: {
+		connectionString: null,
 	},
 
 	getStyles: function() {
@@ -31,25 +36,20 @@ Module.register("MMM-QRCode", {
 
 	start: function() {
 		this.config = Object.assign({}, this.defaults, this.config);
+		if (this.config.useQRconnection) {
+			this.sendSocketNotification("GETIPADDRESS");
+		}
 		Log.log("Starting module: " + this.name);
 	},
 
 	getDom: function() {
+
 		const wrapperEl = document.createElement("div");
 		wrapperEl.classList.add('qrcode');
-
-		if(this.config.connectionString){
-			const connectionString = {
-				mirrorIp : "TESTIP",
-				apiKey : "testAPI"
-			};
-
-			this.config.text = JSON.stringify(connectionString);
-		}
-
+		
 		const qrcodeEl  = document.createElement("div");
 		new QRCode(qrcodeEl, {
-			text: this.config.text,
+			text: this.config.useQRconnection ? JSON.stringify(this.deviceIP.connectionString) : this.config.text,
 			width: this.config.imageSize,
 			height: this.config.imageSize,
 			colorDark : this.config.colorDark,
@@ -71,5 +71,19 @@ Module.register("MMM-QRCode", {
 		}
 
 		return wrapperEl;
-	}
+	},
+	socketNotificationReceived: function(notification, payload) {
+        switch (notification) {
+            case "GOTSOMETHING":
+				var connectionString = {
+					mirrorIp : payload,
+					apiKey : this.config.apiKey,
+				};
+				this.deviceIP.connectionString = connectionString;
+				this.updateDom();
+                break;
+            default:
+                break;
+        }
+    },
 });
