@@ -16,7 +16,8 @@ Module.register("MMM-QRCode", {
 		colorDark  : "#fff",
 		colorLight : "#000",
 		imageSize  : 150,
-		showRaw    : true
+		showRaw    : true,
+		connectionString: false,
 	},
 
 	getStyles: function() {
@@ -36,6 +37,15 @@ Module.register("MMM-QRCode", {
 	getDom: function() {
 		const wrapperEl = document.createElement("div");
 		wrapperEl.classList.add('qrcode');
+
+		if(this.config.connectionString){
+			const connectionString = {
+				mirrorIp : "TESTIP",
+				apiKey : "testAPI"
+			};
+
+			this.config.text = JSON.stringify(connectionString);
+		}
 
 		const qrcodeEl  = document.createElement("div");
 		new QRCode(qrcodeEl, {
