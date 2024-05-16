@@ -49,7 +49,7 @@ Module.register("MMM-QRCode", {
 		
 		const qrcodeEl  = document.createElement("div");
 		new QRCode(qrcodeEl, {
-			text: this.config.useQRconnection ? JSON.stringify(this.deviceIP.connectionString) : this.config.text,
+			text: this.config.useQRconnection ? `http://${this.deviceIP.connectionString}:8080/remote.html` : this.config.text,
 			width: this.config.imageSize,
 			height: this.config.imageSize,
 			colorDark : this.config.colorDark,
@@ -79,7 +79,7 @@ Module.register("MMM-QRCode", {
 					mirrorIp : payload,
 					apiKey : this.config.apiKey,
 				};
-				this.deviceIP.connectionString = connectionString;
+				this.deviceIP.connectionString = payload;
 				this.updateDom();
                 break;
             default:
